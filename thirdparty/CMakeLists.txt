@@ -15,6 +15,7 @@ elseif (THIRDPARTY_STATIC_BUILD STREQUAL "arm")
 endif()
 
 
+
 #openssl compile and add libs to libs file
 message(STATUS "compiling openssl")
 execute_process(
@@ -145,11 +146,15 @@ execute_process(
 # 
 if (THIRDPARTY_STATIC_BUILD STREQUAL "arm" OR THIRDPARTY_STATIC_BUILD STREQUAL "mips")
     execute_process(
+        COMMAND chmod +x configure
+        WORKING_DIRECTORY "${PROJECT_SOURCE_DIR}/thirdparty/zlib-1.2.13"
+    )
+    execute_process(
         COMMAND ./configure
         WORKING_DIRECTORY "${PROJECT_SOURCE_DIR}/thirdparty/zlib-1.2.13"
     )
     execute_process(
-        COMMAND bash "-c" "sed 's/gcc/${CROSS_C_COMPILER}/g' " 
+        COMMAND sed 's/gcc/${CROSS_C_COMPILER}/g' Makefile
         WORKING_DIRECTORY "${PROJECT_SOURCE_DIR}/thirdparty/zlib-1.2.13"
     )
     execute_process(
