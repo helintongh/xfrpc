@@ -142,6 +142,17 @@ execute_process(
     COMMAND cp -f json.h ../../include/json-c
     WORKING_DIRECTORY "${PROJECT_SOURCE_DIR}/thirdparty/json-c/build"
 )
+# 
+if (THIRDPARTY_STATIC_BUILD "arm" OR "mips")
+    execute_process(
+        COMMAND ./configure
+        WORKING_DIRECTORY "${PROJECT_SOURCE_DIR}/thirdparty/zlib-1.2.13"
+    )
+    execute_process(
+        COMMAND bash "-c" "sed 's/gcc/${CROSS_C_COMPILER}/g' " 
+        WORKING_DIRECTORY "${PROJECT_SOURCE_DIR}/thirdparty/zlib-1.2.13"
+    )
+endif(THIRDPARTY_STATIC_BUILD)
 
 endif(THIRDPARTY_STATIC_BUILD)
 
