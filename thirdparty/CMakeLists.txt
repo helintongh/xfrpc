@@ -2,6 +2,19 @@
 cmake_minimum_required(VERSION 2.6)
 
 message(STATUS "PROJECT PATH IS: :${PROJECT_SOURCE_DIR}")
+message(STATUS "architecture is::${THIRDPARTY_STATIC_BUILD}")
+
+if (THIRDPARTY_STATIC_BUILD "mips")
+    set(ARCH_FLAG "linux-mips32")
+    set(CROSSC_COMPILER_PREFIX "mips-linux-gnu-")
+    set(CROSS_C_COMPILER "mips-linux-gnu-gcc")
+elseif (THIRDPARTY_STATIC_BUILD "arm")
+    set(ARCH_FLAG "linux-armv4")
+    set(CROSSC_COMPILER_PREFIX "arm-linux-gnueabihf-")
+    set(CROSS_C_COMPILER "arm-linux-gnueabihf-gcc")
+endif()
+
+
 #openssl compile and add libs to libs file
 message(STATUS "compiling openssl")
 execute_process(
@@ -23,10 +36,17 @@ execute_process(
     WORKING_DIRECTORY "${PROJECT_SOURCE_DIR}/thirdparty/openssl-1.1.1m"
 )
 
-execute_process(
-    COMMAND ./config --static
-    WORKING_DIRECTORY "${PROJECT_SOURCE_DIR}/thirdparty/openssl-1.1.1m"
-)
+if (THIRDPARTY_STATIC_BUILD "x86")
+    execute_process(
+        COMMAND ./config --static
+        WORKING_DIRECTORY "${PROJECT_SOURCE_DIR}/thirdparty/openssl-1.1.1m"
+    )
+elseif (THIRDPARTY_STATIC_BUILD "mips" or "arm")
+    execute_process(
+        COMMAND ./Configure ${ARCH_FLAG} --cross-compile-prefix=${CROSSC_COMPILER_PREFIX} --static
+        WORKING_DIRECTORY "${PROJECT_SOURCE_DIR}/thirdparty/openssl-1.1.1m"
+    )
+endif(THIRDPARTY_STATIC_BUILD)
 
 execute_process(
     COMMAND make -j${NPROC}
@@ -59,11 +79,17 @@ execute_process(
     COMMAND mkdir build
     WORKING_DIRECTORY "${PROJECT_SOURCE_DIR}/thirdparty/libevent-2.1.10"
 )
-
-execute_process(
-    COMMAND cmake -DOPENSSL_ROOT_DIR=${PROJECT_SOURCE_DIR}/thirdparty/openssl-1.1.1m -DOPENSSL_LIBRARES=${PROJECT_SOURCE_DIR}/thirdparty/openssl-1.1.1m ..
-    WORKING_DIRECTORY "${PROJECT_SOURCE_DIR}/thirdparty/libevent-2.1.10/build"
-)
+if (THIRDPARTY_STATIC_BUILD "x86")
+    execute_process(
+        COMMAND cmake -DOPENSSL_ROOT_DIR=${PROJECT_SOURCE_DIR}/thirdparty/openssl-1.1.1m -DOPENSSL_LIBRARES=${PROJECT_SOURCE_DIR}/thirdparty/openssl-1.1.1m ..
+        WORKING_DIRECTORY "${PROJECT_SOURCE_DIR}/thirdparty/libevent-2.1.10/build"
+    )
+else()
+    execute_process(
+        COMMAND cmake -DCMAKE_C_COMPILER=${CROSS_C_COMPILER} -DOPENSSL_ROOT_DIR=${PROJECT_SOURCE_DIR}/thirdparty/openssl-1.1.1m -DOPENSSL_LIBRARES=${PROJECT_SOURCE_DIR}/thirdparty/openssl-1.1.1m ..
+        WORKING_DIRECTORY "${PROJECT_SOURCE_DIR}/thirdparty/libevent-2.1.10/build"
+    )
+endif(THIRDPARTY_STATIC_BUILD)
 
 execute_process(
     COMMAND make -j${NPROC}
@@ -74,7 +100,7 @@ set(EVENT_BUILD_PATH ${PROJECT_SOURCE_DIR}/thirdparty/libevent-2.1.10/build)
 set(LIBS_PATH ${PROJECT_SOURCE_DIR}/thirdparty/libs)
 
 file(GLOB EVENT_LIBS_PATH
-	"${EVENT_BUILD_PATH}/lib/libevent*.a"	
+    "${EVENT_BUILD_PATH}/lib/libevent*.a"	
 )
 file(COPY ${EVENT_LIBS_PATH} DESTINATION ${LIBS_PATH})
 
@@ -89,11 +115,17 @@ execute_process(
     COMMAND mkdir build
     WORKING_DIRECTORY "${PROJECT_SOURCE_DIR}/thirdparty/json-c"
 )
-
-execute_process(
-    COMMAND cmake ..
-    WORKING_DIRECTORY "${PROJECT_SOURCE_DIR}/thirdparty/json-c/build"
-)
+if (THIRDPARTY_STATIC_BUILD "x86")
+    execute_process(
+        COMMAND cmake ..
+        WORKING_DIRECTORY "${PROJECT_SOURCE_DIR}/thirdparty/json-c/build"
+    )
+else()
+    execute_process(
+        COMMAND cmake -DCMAKE_C_COMPILER=${CROSS_C_COMPILER} ..
+        WORKING_DIRECTORY "${PROJECT_SOURCE_DIR}/thirdparty/json-c/build"
+    )
+endif(THIRDPARTY_STATIC_BUILD)
 
 execute_process(
     COMMAND make -j${NPROC}
@@ -105,4 +137,11 @@ execute_process(
     COMMAND cp -f libjson-c.a ../../libs
     WORKING_DIRECTORY "${PROJECT_SOURCE_DIR}/thirdparty/json-c/build"
 )
+
+execute_process(
+    COMMAND cp -f json.h ../../include/json-c
+    WORKING_DIRECTORY "${PROJECT_SOURCE_DIR}/thirdparty/json-c/build"
+)
+
+endif(THIRDPARTY_STATIC_BUILD)
 

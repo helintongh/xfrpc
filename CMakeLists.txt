@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 2.6)
 
 project(xfrp C)
 
-if (THIRDPARTY_STATIC_BUILD STREQUAL "ON") # add x86 iot device support
+if (THIRDPARTY_STATIC_BUILD STREQUAL "x86" OR "mips" OR "arm")
 	add_subdirectory(${PROJECT_SOURCE_DIR}/thirdparty/)
 	include_directories(${PROJECT_SOURCE_DIR}/thirdparty/include/libevent)
 	include_directories(${PROJECT_SOURCE_DIR}/thirdparty/include/)
