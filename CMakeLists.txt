@@ -25,14 +25,6 @@ else()
 	include_directories(${JSON-C_INCLUDE_DIR})
 endif(THIRDPARTY_STATIC_BUILD)
 
-if (THIRDPARTY_STATIC_BUILD STREQUAL "ON")
-	set(CMAKE_C_COMPILER "gcc")
-elseif(THIRDPARTY_STATIC_BUILD STREQUAL "mips")
-	set(CMAKE_C_COMPILER "mips-linux-gnu-gcc")
-elseif(THIRDPARTY_STATIC_BUILD STREQUAL "arm")
-	set(CMAKE_C_COMPILER "arm-linux-gnueabihf-gcc")
-endif(THIRDPARTY_STATIC_BUILD)
-
 set(src_xfrpc
 	main.c
   	client.c

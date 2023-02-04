@@ -37,7 +37,7 @@ execute_process(
     WORKING_DIRECTORY "${PROJECT_SOURCE_DIR}/thirdparty/openssl-1.1.1m"
 )
 
-if (THIRDPARTY_STATIC_BUILD STREQUAL "x86")
+if (THIRDPARTY_STATIC_BUILD STREQUAL "ON")
     execute_process(
         COMMAND ./config --static
         WORKING_DIRECTORY "${PROJECT_SOURCE_DIR}/thirdparty/openssl-1.1.1m"
@@ -80,7 +80,7 @@ execute_process(
     COMMAND mkdir build
     WORKING_DIRECTORY "${PROJECT_SOURCE_DIR}/thirdparty/libevent-2.1.10"
 )
-if (THIRDPARTY_STATIC_BUILD STREQUAL "x86")
+if (THIRDPARTY_STATIC_BUILD STREQUAL "ON")
     execute_process(
         COMMAND cmake -DOPENSSL_ROOT_DIR=${PROJECT_SOURCE_DIR}/thirdparty/openssl-1.1.1m -DOPENSSL_LIBRARES=${PROJECT_SOURCE_DIR}/thirdparty/openssl-1.1.1m ..
         WORKING_DIRECTORY "${PROJECT_SOURCE_DIR}/thirdparty/libevent-2.1.10/build"
@@ -116,7 +116,7 @@ execute_process(
     COMMAND mkdir build
     WORKING_DIRECTORY "${PROJECT_SOURCE_DIR}/thirdparty/json-c"
 )
-if (THIRDPARTY_STATIC_BUILD STREQUAL "x86")
+if (THIRDPARTY_STATIC_BUILD STREQUAL "ON")
     execute_process(
         COMMAND cmake ..
         WORKING_DIRECTORY "${PROJECT_SOURCE_DIR}/thirdparty/json-c/build"
