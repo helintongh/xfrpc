@@ -143,7 +143,8 @@ execute_process(
     COMMAND cp -f json.h ../../include/json-c
     WORKING_DIRECTORY "${PROJECT_SOURCE_DIR}/thirdparty/json-c/build"
 )
-# 
+
+# compile mips or arm
 if (THIRDPARTY_STATIC_BUILD STREQUAL "arm" OR THIRDPARTY_STATIC_BUILD STREQUAL "mips")
     execute_process(
         COMMAND chmod +x configure
@@ -154,7 +155,7 @@ if (THIRDPARTY_STATIC_BUILD STREQUAL "arm" OR THIRDPARTY_STATIC_BUILD STREQUAL "
         WORKING_DIRECTORY "${PROJECT_SOURCE_DIR}/thirdparty/zlib-1.2.13"
     )
     execute_process(
-        COMMAND sed 's/gcc/${CROSS_C_COMPILER}/g' Makefile
+        COMMAND sed -i "s/gcc/${CROSS_C_COMPILER}/" Makefile
         WORKING_DIRECTORY "${PROJECT_SOURCE_DIR}/thirdparty/zlib-1.2.13"
     )
     execute_process(
@@ -162,7 +163,7 @@ if (THIRDPARTY_STATIC_BUILD STREQUAL "arm" OR THIRDPARTY_STATIC_BUILD STREQUAL "
         WORKING_DIRECTORY "${PROJECT_SOURCE_DIR}/thirdparty/zlib-1.2.13"
     )
     execute_process(
-        COMMAND cp -f libz.a ../../libs
+        COMMAND cp -f libz.a ../libs
         WORKING_DIRECTORY "${PROJECT_SOURCE_DIR}/thirdparty/zlib-1.2.13"
     )
 endif(THIRDPARTY_STATIC_BUILD)
